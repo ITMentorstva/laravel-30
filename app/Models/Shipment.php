@@ -26,6 +26,8 @@ class Shipment extends Model
         'user_id', 'details',
     ];
 
+    protected $table = "shipment";
+
     public function setStatusAttribute($status)
     {
         if(!in_array($status, self::ALLOWED_STATUSES)) {
