@@ -82,6 +82,10 @@
                 <div class="shipment-info">
                     <span class="shipment-label">Posted by User ID:</span> {{ $shipment->user_id }}
                 </div>
+
+                <div class="shipment-info">
+                    <a href="{{ route('shipments.show', ['shipment' => $shipment->id]) }}">View shipment</a>
+                </div>
             </div>
         @endforeach
     </div>

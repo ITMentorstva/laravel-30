@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NewShipmentRequest;
 use App\Models\Shipment;
+use App\Models\ShipmentDocuments;
+use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ShipmentController extends Controller
 {
+
+    use ImageUploadTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -40,7 +45,45 @@ class ShipmentController extends Controller
      */
     public function store(NewShipmentRequest $request)
     {
-        Shipment::create($request->validated());
+        $shipment = Shipment::create($request->validated());
+
+        $fileTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+
+        foreach ($request->file('documents') as $document) {
+
+            if(str_starts_with($document->getMimeType(), 'image/')) {
+
+                $name = $this->uploadImage($document, "documents/$shipment->id");
+
+                $name = $shipment->id."/".$name;
+
+                ShipmentDocuments::create([
+                    'shipment_id' => $shipment->id,
+                    'document_name' => $name
+                ]);
+
+            }
+            elseif(in_array($document->getMimeType(), $fileTypes)) {
+
+                $extension = $document->getClientOriginalExtension(); // .pdf, .doc, .docx
+
+                $filename = uniqid().".".$extension;
+
+                $path = $document->storeAs("documents/{$shipment->id}", $filename, 'public');
+
+                $path = str_replace("documents/", "", $path);
+
+                ShipmentDocuments::create([
+                    'shipment_id' => $shipment->id,
+                    'document_name' => $path
+                ]);
+            }
+        }
+
         return redirect()->route('shipments.index');
     }
 

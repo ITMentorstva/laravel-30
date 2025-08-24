@@ -53,7 +53,7 @@
     <div class="form-container">
         <h2>Create New Shipment</h2>
 
-        <form action="{{ route('shipments.store') }}" method="POST">
+        <form action="{{ route('shipments.store') }}" enctype="multipart/form-data" method="POST">
             @csrf
 
             <div class="form-group">
@@ -96,8 +96,8 @@
             </div>
 
             <div class="form-group">
-                <label for="user_id">User ID</label>
-                <input type="number" name="user_id" value="{{ old('user_id') }}" required>
+                <label for="documents">Documents</label>
+                <input type="file" name="documents[]" multiple required>
             </div>
 
             <div class="form-group">
