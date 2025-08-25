@@ -1,3 +1,4 @@
+@php use App\Models\Shipment; @endphp
 @extends('layout')
 
 @section('content')
@@ -53,69 +54,88 @@
     <div class="form-container">
         <h2>Create New Shipment</h2>
 
-        <form action="{{ route('shipments.store') }}" enctype="multipart/form-data" method="POST">
+        <form action="{{ route('shipments.update', ['shipment' => $shipment->id]) }}"
+              enctype="multipart/form-data"
+              method="POST"
+        >
+
             @csrf
+            @method('PUT')
+
 
             <div class="form-group">
                 <label for="title">Title</label>
-                <input type="text" name="title" value="{{ old('title') }}" required>
+                <input type="text" name="title" value="{{ $shipment->title ?? '' }}" required>
             </div>
 
             <div class="form-group">
                 <label for="from_city">From City</label>
-                <input type="text" name="from_city" value="{{ old('from_city') }}" required>
+                <input type="text" name="from_city" value="{{ $shipment->from_city ?? '' }}" required>
             </div>
 
             <div class="form-group">
                 <label for="from_country">From Country</label>
-                <input type="text" name="from_country" value="{{ old('from_country') }}" required>
+                <input type="text" name="from_country" value="{{ $shipment->from_country ?? '' }}" required>
             </div>
 
             <div class="form-group">
                 <label for="to_city">To City</label>
-                <input type="text" name="to_city" value="{{ old('to_city') }}" required>
+                <input type="text" name="to_city" value="{{ $shipment->to_city ?? '' }}" required>
             </div>
 
             <div class="form-group">
                 <label for="to_country">To Country</label>
-                <input type="text" name="to_country" value="{{ old('to_country') }}" required>
+                <input type="text" name="to_country" value="{{ $shipment->to_country ?? '' }}" required>
             </div>
 
             <div class="form-group">
                 <label for="price">Price ($)</label>
-                <input type="number" name="price" value="{{ old('price') }}" min="0" required>
+                <input type="number" name="price" value="{{ $shipment->price ?? '' }}" min="0" required>
             </div>
 
             <div class="form-group">
-                <label for="status">Status</label>
-                <select name="status" required>
-                    @foreach(\App\Models\Shipment::ALLOWED_STATUSES as $status)
-                        <option value="{{ $status }}">{{ $status }}</option>
-                    @endforeach
-                </select>
+
+                @if($errors->has('user_id'))
+                    <p>{{ $errors->first('user_id') }}</p>
+                @endif
+
+                <label for="user_id">Trucker ID</label>
+                <input type="number" name="user_id" value="{{ $shipment->user_id ?? '' }}" min="0" required>
             </div>
 
             <div class="form-group">
 
                 @if($errors->has('client_id'))
-                    <p>{{ $errors->first() }}</p>
+                    <p>{{ $errors->first('client_id') }}</p>
                 @endif
 
                 <label for="client_id">Client ID</label>
-                <input type="number" name="client_id" value="{{ old('client_id') }}" min="0" required>
+                <input type="number" name="client_id" value="{{ $shipment->client_id ?? '' }}" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" required>
+                    @foreach(Shipment::ALLOWED_STATUSES as $status)
+                        <option value="{{ $status }}" {{ $shipment->status === $status ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">
                 <label for="documents">Documents</label>
-                <input type="file" name="documents[]" multiple required>
+                <input type="file" name="documents[]" multiple>
             </div>
 
             <div class="form-group">
                 <label for="details">Details</label>
-                <textarea name="details" rows="4" required>{{ old('details') }}</textarea>
+                <textarea name="details" rows="4" required>{{ $shipment->details ?? '' }}</textarea>
             </div>
 
-            <button type="submit">Create Shipment</button>
+            <button type="submit">Update Shipment</button>
         </form>
+
     </div>
 @endsection

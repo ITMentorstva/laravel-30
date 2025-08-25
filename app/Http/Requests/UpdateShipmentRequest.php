@@ -3,15 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Rules\UserClient;
+use App\Rules\UserTrucker;
 use Illuminate\Foundation\Http\FormRequest;
 
-class NewShipmentRequest extends FormRequest
+class UpdateShipmentRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     public function rules(): array
     {
         return [
@@ -23,9 +19,8 @@ class NewShipmentRequest extends FormRequest
             'price' => 'required|integer|min:0',
             'status' => 'required|in:in_progress,unassigned,completed,problem',
             'details' => 'required|string',
-            'documents' => 'required|array',
-            'document.*' => 'file|mimes:jpg,jpeg,png,webp,pdf,doc,docx|max:10240',
-            'client_id' => ['required', new UserClient()]
+            'user_id' => ['required', new UserTrucker()],
+            'client_id' => ['required', new UserClient()],
         ];
     }
 }
